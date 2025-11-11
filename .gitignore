@@ -1,0 +1,23 @@
+# Visual Studio
+.vs/
+*.vscode/
+*.user
+*.suo
+*.cache
+*.dbmdl
+*.bak
+*.log
+*.ldf
+*.mdf
+
+# Build results
+bin/
+obj/
+Debug/
+Release/
+
+# Others
+*.exe
+*.dll
+*.pdb
+*.tmp

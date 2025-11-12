@@ -19,7 +19,7 @@ namespace Url_Crud_Service.Services
         {
             var evt = context.Message;
 
-            if (evt.SourceService == "UrlShorten")
+            if (evt.SourceService != "UrlShorten")
                 return;
 
             var detail = new UrlCrud

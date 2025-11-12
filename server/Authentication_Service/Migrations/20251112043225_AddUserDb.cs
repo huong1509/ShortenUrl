@@ -20,9 +20,9 @@ namespace Authentication_Service.Migrations
                     UserName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ResetCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ResetCodeExpiry = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ResetCodeVerified = table.Column<bool>(type: "bit", nullable: false)
+                    ResetToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ResetTokenExpiry = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ResetTokenVerified = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

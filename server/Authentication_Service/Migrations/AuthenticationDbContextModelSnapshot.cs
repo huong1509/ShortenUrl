@@ -22,7 +22,7 @@ namespace Authentication_Service.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Authentication.Models.User", b =>
+            modelBuilder.Entity("Authentication_Service.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -38,13 +38,13 @@ namespace Authentication_Service.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ResetCode")
+                    b.Property<string>("ResetToken")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("ResetCodeExpiry")
+                    b.Property<DateTime?>("ResetTokenExpiry")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("ResetCodeVerified")
+                    b.Property<bool>("ResetTokenVerified")
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")

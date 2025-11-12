@@ -4,10 +4,10 @@ using Authentication_Service.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Authentication_Service.Services;
 using BC = BCrypt.Net.BCrypt;
@@ -165,43 +165,57 @@ namespace Authentication_Service.Controllers
 
         [HttpPost("send-email")]
         [AllowAnonymous]
-        public async Task<IActionResult> RequestForgotPassword( SendEmailDto sendEmailDto,EmailService emailService)
+        public async Task<IActionResult> RequestForgotPassword(SendEmailDto sendEmailDto, EmailService emailService)
         {
-            var email = await _context.Users.FirstOrDefaultAsync(u => u.Email == sendEmailDto.Email);
-            if (email == null)
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == sendEmailDto.Email);
+            if (user == null)
                 return BadRequest("Email not found.");
 
-            var code = new Random().Next(100000, 999999).ToString();
-            email.ResetCode = code;
-            email.ResetCodeExpiry = DateTime.UtcNow.AddMinutes(10);
-            email.ResetCodeVerified = false;
+
+            var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
+                .Replace("+", "").Replace("/", "").Replace("=", ""); 
+
+            user.ResetToken = token;
+            user.ResetTokenExpiry = DateTime.UtcNow.AddMinutes(30); 
+            user.ResetTokenVerified = false;
 
             await _context.SaveChangesAsync();
+
+
+            var resetLink = $"https://localhost:1000/api/auth/verify-token?token={token}";
+
 
             await emailService.SendEmailAsync(
                 sendEmailDto.Email,
-                "Password Reset Verification Code",
-                $"Your verification code is: {code}");
+                "Password Reset Request",
+                $@"Hello {user.UserName},
 
-            return Ok("A verification code has been sent to your email.");
+                You requested to reset your password. Click the link below to verify your email and reset your password:{resetLink}
+                This link will expire in 30 minutes.");
+
+            return Ok("A password reset link has been sent to your email.");
         }
 
 
-        [HttpPost("verify-code")]
+        [HttpGet("verify-token")]
         [AllowAnonymous]
-        public async Task<IActionResult> VerifyResetCode(VerifyCodeDto codeVerifyDto)
+        public async Task<IActionResult> VerifyResetToken( string token)
         {
-            var email = await _context.Users.FirstOrDefaultAsync(u => u.Email == codeVerifyDto.Email);
-            if (email == null)
-                return BadRequest("Email not found.");
+            if (string.IsNullOrWhiteSpace(token))
+                return BadRequest(new { success = false, message = "Invalid token." });
 
-            if (email.ResetCode != codeVerifyDto.Code || email.ResetCodeExpiry < DateTime.UtcNow)
-                return BadRequest("Invalid or expired code.");
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.ResetToken == token);
 
-            email.ResetCodeVerified = true;
+            if (user == null)
+                return BadRequest(new { success = false, message = "Invalid token." });
+
+            if (user.ResetTokenExpiry < DateTime.UtcNow)
+                return BadRequest(new { success = false, message = "Token has expired. Please request a new password reset." });
+
+            user.ResetTokenVerified = true;
             await _context.SaveChangesAsync();
 
-            return Ok("Verification code is valid. You can now reset your password.");
+            return Ok(new { success = true, message = "Email verified successfully. You can now reset your password.", token = token });
         }
 
 
@@ -209,29 +223,31 @@ namespace Authentication_Service.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
         {
-            var email = await _context.Users.FirstOrDefaultAsync(u => u.Email == resetPasswordDto.Email);
-            if (email == null)
-                return BadRequest("Email not found.");
+            if (string.IsNullOrWhiteSpace(resetPasswordDto.Token))
+                return BadRequest("Token is required.");
 
-            if (!email.ResetCodeVerified)
-                return BadRequest("Verification code not confirmed.");
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.ResetToken == resetPasswordDto.Token);
 
-            if(resetPasswordDto.NewPassword != resetPasswordDto.ConfirmPassword)
-            {
-                return BadRequest("Password do not match!");
+            if (user == null)
+                return BadRequest("Invalid token.");
 
-            }
-            else
-            {
-                email.PasswordHash = BC.HashPassword(resetPasswordDto.NewPassword);
-                email.ResetCode = null;
-                email.ResetCodeVerified = false;
-                email.ResetCodeExpiry = null;
+            if (!user.ResetTokenVerified)
+                return BadRequest("Email not verified. Please click the link in your email first.");
 
-                await _context.SaveChangesAsync();
+            if (user.ResetTokenExpiry < DateTime.UtcNow)
+                return BadRequest("Token has expired.");
 
-                return Ok("Password has been reset successfully.");
-            }
+            if (resetPasswordDto.NewPassword != resetPasswordDto.ConfirmPassword)
+                return BadRequest("Passwords do not match!");
+
+            user.PasswordHash = BC.HashPassword(resetPasswordDto.NewPassword);
+            user.ResetToken = null;
+            user.ResetTokenVerified = false;
+            user.ResetTokenExpiry = null;
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Password has been reset successfully. You can now login with your new password.");
         }
     }
 }

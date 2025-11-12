@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Authentication_Service.Migrations
 {
     [DbContext(typeof(AuthenticationDbContext))]
-    [Migration("20251106154521_AddUserDb")]
+    [Migration("20251112043225_AddUserDb")]
     partial class AddUserDb
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace Authentication_Service.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Authentication.Models.User", b =>
+            modelBuilder.Entity("Authentication_Service.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,14 +41,13 @@ namespace Authentication_Service.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ResetCode")
-                        .IsRequired()
+                    b.Property<string>("ResetToken")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("ResetCodeExpiry")
+                    b.Property<DateTime?>("ResetTokenExpiry")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("ResetCodeVerified")
+                    b.Property<bool>("ResetTokenVerified")
                         .HasColumnType("bit");
 
                     b.Property<string>("UserName")

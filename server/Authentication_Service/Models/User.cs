@@ -13,9 +13,9 @@ namespace Authentication_Service.Models
         [Required]
         public string PasswordHash { get; set; } = string.Empty;
 
-        public string? ResetCode { get; set; }
-        public DateTime? ResetCodeExpiry { get; set; }
-        public bool ResetCodeVerified { get; set; } = false;
+        public string? ResetToken { get; set; }
+        public DateTime? ResetTokenExpiry { get; set; }
+        public bool ResetTokenVerified { get; set; } = false;
 
     }
 }

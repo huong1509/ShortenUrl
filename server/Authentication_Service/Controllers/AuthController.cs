@@ -173,10 +173,10 @@ namespace Authentication_Service.Controllers
 
 
             var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
-                .Replace("+", "").Replace("/", "").Replace("=", ""); 
+                .Replace("+", "").Replace("/", "").Replace("=", "");
 
             user.ResetToken = token;
-            user.ResetTokenExpiry = DateTime.UtcNow.AddMinutes(30); 
+            user.ResetTokenExpiry = DateTime.UtcNow.AddMinutes(30);
             user.ResetTokenVerified = false;
 
             await _context.SaveChangesAsync();
@@ -199,7 +199,7 @@ namespace Authentication_Service.Controllers
 
         [HttpGet("verify-token")]
         [AllowAnonymous]
-        public async Task<IActionResult> VerifyResetToken( string token)
+        public async Task<IActionResult> VerifyResetToken(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
                 return BadRequest(new { success = false, message = "Invalid token." });
@@ -223,13 +223,13 @@ namespace Authentication_Service.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
         {
-            if (string.IsNullOrWhiteSpace(resetPasswordDto.Token))
-                return BadRequest("Token is required.");
+            //if (string.IsNullOrWhiteSpace(resetPasswordDto.Token))
+            //    return BadRequest("Token is required.");
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.ResetToken == resetPasswordDto.Token);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == resetPasswordDto.Email);
 
-            if (user == null)
-                return BadRequest("Invalid token.");
+            //if (user == null)
+            //    return BadRequest("Invalid token.");
 
             if (!user.ResetTokenVerified)
                 return BadRequest("Email not verified. Please click the link in your email first.");

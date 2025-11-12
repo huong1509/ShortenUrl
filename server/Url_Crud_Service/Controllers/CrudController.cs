@@ -1,8 +1,10 @@
-﻿using Url_Crud_Service.Data;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Url_Crud_Service.Data;
+using Url_Crud_Service.Events;
 
 namespace Url_Crud_Service.Controllers
 {
@@ -12,10 +14,12 @@ namespace Url_Crud_Service.Controllers
     public class CrudController : ControllerBase
     {
         private readonly CrudDbContext _db;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public CrudController(CrudDbContext db)
+        public CrudController(CrudDbContext db, IPublishEndpoint publishEndpoint)
         {
             _db = db;
+            _publishEndpoint = publishEndpoint;
         }
 
         // GET: api/urlcrud
@@ -67,8 +71,10 @@ namespace Url_Crud_Service.Controllers
             if (exists)
                 return BadRequest("The code already exists, please choose another one.");
 
+            string oldCode = existing.ShortenCode;
+
             existing.ShortenCode = newCode;
-            const string baseUrl = "http://localhost:2000/api/shorten";
+            const string baseUrl = "https://localhost:2000/api/shorten";
             existing.ShortenUrl = $"{baseUrl}/{newCode}";
 
             _db.Entry(existing).State = EntityState.Modified;
@@ -76,6 +82,15 @@ namespace Url_Crud_Service.Controllers
             try
             {
                 await _db.SaveChangesAsync();
+
+
+                await _publishEndpoint.Publish(new UrlUpdateEvent
+                {
+                    Id = existing.Id,
+                    OldCode = oldCode,
+                    NewCode = existing.ShortenCode,
+                    SourceService = "UrlCrud"
+                });
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -103,6 +118,14 @@ namespace Url_Crud_Service.Controllers
 
             _db.UrlCruds.Remove(url);
             await _db.SaveChangesAsync();
+
+
+            await _publishEndpoint.Publish(new UrlDeleteEvent
+            {
+                Id = id,
+                ShortenCode = url.ShortenCode,
+                SourceService = "UrlCrud"
+            });
 
             return Ok($"Deleted URL with ID {id}");
         }

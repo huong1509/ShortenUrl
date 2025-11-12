@@ -46,15 +46,30 @@ namespace Url_Shorten_Service
 
             builder.Services.AddMassTransit(x =>
             {
+                x.AddConsumer<ReceiveUrlUpdateService>();
+                x.AddConsumer<ReceiveUrlDeleteService>();
+
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host("localhost", "/", h => 
+                    cfg.Host("localhost", "/", h =>
                     {
                         h.Username("guest");
                         h.Password("guest");
                     });
+
+                    cfg.ReceiveEndpoint("url-update-event", e =>
+                    {
+                        e.ConfigureConsumer<ReceiveUrlUpdateService>(context);
+                    });
+
+                    cfg.ReceiveEndpoint("url-delete-event", e =>
+                    {
+                        e.ConfigureConsumer<ReceiveUrlDeleteService>(context);
+                    });
                 });
             });
+
+
             // Add services to the container.
 
             builder.Services.AddControllers();

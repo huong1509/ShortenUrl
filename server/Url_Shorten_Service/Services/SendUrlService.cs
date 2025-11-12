@@ -65,6 +65,7 @@ namespace Url_Shorten_Service.Services
                 OriginalUrl = shortUrl.OriginalUrl,
                 ShortenUrl = link,
                 ShortenCode = shortUrl.ShortenCode,
+                SourceService = "UrlShorten",
                 DateTime = shortUrl.DateTime
             });
 
@@ -78,6 +79,8 @@ namespace Url_Shorten_Service.Services
         public string OriginalUrl { get; set; }
         public string ShortenUrl { get; set; }
         public string ShortenCode { get; set; }
+        public string SourceService { get; set; } = "UrlShorten";
+
         public DateTime DateTime { get; set; }
     }
 }

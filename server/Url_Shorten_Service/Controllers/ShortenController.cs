@@ -26,22 +26,6 @@ namespace Url_Shorten_Service.Controllers
         {
             try
             {
-                //string? email = null;
-                //var emailClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-                //if (emailClaim != null)
-                //{
-                //    email = emailClaim.Value; 
-                //}
-
-                //var baseUrl = $"{Request.Scheme}://{Request.Host}";
-                //var result = await _service.SendShortUrl(dto, baseUrl, email);
-
-                //return Ok(new
-                //{
-                //    Link = $"{baseUrl}/api/shorten/{result.ShortenCode}",
-                //    IsAuthenticated = !string.IsNullOrEmpty(email)
-                //});
 
                 string? email = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 

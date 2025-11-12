@@ -1,7 +1,8 @@
 ﻿using MassTransit;
 using Url_Crud_Service.Data;
 using Url_Crud_Service.Models;
-using Url_Shorten_Service.Services;
+using Shareds_Events;
+
 
 namespace Url_Crud_Service.Services
 {

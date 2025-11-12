@@ -5,6 +5,7 @@ using Url_Shorten_Service.Data;
 using Url_Shorten_Service.DTOs;
 using Url_Shorten_Service.Models;
 using Microsoft.AspNetCore.Mvc;
+using Shareds_Events;
 
 
 namespace Url_Shorten_Service.Services
@@ -71,17 +72,6 @@ namespace Url_Shorten_Service.Services
 
             return shortUrl;
         }
-    }
-
-    public record UrlSendEvent
-    {
-        public string? Email { get; set; }
-        public string OriginalUrl { get; set; }
-        public string ShortenUrl { get; set; }
-        public string ShortenCode { get; set; }
-        public string SourceService { get; set; } = "UrlShorten";
-
-        public DateTime DateTime { get; set; }
     }
 }
 

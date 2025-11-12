@@ -34,6 +34,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "client", "client\", "{F03FE
 		SlnRelativePath = "client\"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shareds_Events", "server\Shareds_Events\Shareds_Events.csproj", "{8A9A3E8F-925A-AA24-567F-F9F866418BDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +62,10 @@ Global
 		{F03FED76-20DB-B30E-51FF-188119B1BFB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F03FED76-20DB-B30E-51FF-188119B1BFB7}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{F03FED76-20DB-B30E-51FF-188119B1BFB7}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{8A9A3E8F-925A-AA24-567F-F9F866418BDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A9A3E8F-925A-AA24-567F-F9F866418BDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A9A3E8F-925A-AA24-567F-F9F866418BDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A9A3E8F-925A-AA24-567F-F9F866418BDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +75,7 @@ Global
 		{7D358172-2F94-4ADF-96CD-F7DBDA430057} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{59407CAC-A302-4A10-B113-3547492AE154} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{958DE446-152A-4C13-BA19-D02F4DFA9ACC} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{8A9A3E8F-925A-AA24-567F-F9F866418BDE} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E0603074-2B0E-49C6-AA12-232E64BA5EF5}
